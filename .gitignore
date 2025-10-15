@@ -1,4 +1,28 @@
+# Virtual environments
 venv/
-.env
+env/
+.venv/
+
+# Python cache
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+*.env
+
+# macOS
 .DS_Store
+
+# Playwright specific
+playwright-report/
+test-results/
+.playwright/
+
+# Logs
+*.log
+
+# VSCode settings (optional)
+.vscode/
