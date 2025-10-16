@@ -1,49 +1,22 @@
-from playwright.async_api import async_playwright
 import asyncio
-from dotenv import load_dotenv
-import os
-import time
-from brightspace_scraper.modules.auth import login
-from brightspace_scraper.utils.credentials import getUserCredentials
-from brightspace_scraper.utils.courses import getCourses, getCourseId
-from brightspace_scraper.modules.assignments import getAssignments
+import threading
+import customtkinter as ctk
+from gui.frames.login import loginFrame
 
-load_dotenv()
+def start_asyncio_loop():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_forever()
 
-BRIGHTSPACE_URL = os.environ.get("BRIGHTSPACE_URL")
-
-
-async def main():
-    async with async_playwright() as p:
-        BROWSER = await p.chromium.launch(headless=False)
-        CONTEXT = await BROWSER.new_context()
-        PAGE = await CONTEXT.new_page()
-
-        USER_USERNAME, USER_PASSWORD = getUserCredentials()['username'], getUserCredentials()['password']
-
-        await login(PAGE, BRIGHTSPACE_URL, USER_USERNAME, USER_PASSWORD)
-
-        COURSES: dict[str] = await getCourses(PAGE)
-        COURSE_ID: list[str] = await getCourseId(COURSES)
-
-        ASSIGNMENTS: list[str] = await getAssignments(PAGE, COURSE_ID)
-
-        
 if __name__ == "__main__":
-    asyncio.run(main())
-        
+    # Start asyncio loop in a background thread
+    threading.Thread(target=start_asyncio_loop, daemon=True).start()
 
+    # Create GUI
+    app = ctk.CTk()
+    app.title("BrightSpace Scraper")
 
+    frame = loginFrame(app, on_login_callback=lambda u, p: print(f"Logging in {u}:{p}"))
+    frame.pack(expand=True, fill="both")
 
-
-
-
-
-
-
-
-
-
-
-
-
+    app.mainloop()
